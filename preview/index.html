@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÚnicoPag — Novo Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --navy:#1c3154;
+  --navy-dark:#0b1527;
+  --navy-mid:#152540;
+  --coral:#dc3645;
+  --success:#16a34a;
+  --success-bg:#f0fdf4;
+  --border:#e2e8f0;
+  --muted:#64748b;
+  --muted-2:#94a3b8;
+  --bg:#f8f9fa;
+  --bg-2:#f1f5f9;
+  --white:#ffffff;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 4px 24px rgba(28,49,84,0.08);
+  --shadow-lg:0 20px 60px rgba(11,21,39,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter','Segoe UI',sans-serif;background:var(--bg);color:var(--navy);-webkit-font-smoothing:antialiased;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;text-decoration:none;}
+
+/* ===== dev preview switcher — ferramenta interna, NÃO faz parte do produto/onboarding real ===== */
+.dev-toggle{position:fixed;bottom:16px;right:16px;z-index:9999;width:44px;height:44px;border-radius:50%;background:var(--navy-dark);color:#fff;border:none;box-shadow:var(--shadow-lg);font-size:16px;}
+.dev-panel{position:fixed;bottom:70px;right:16px;z-index:9999;background:var(--navy-dark);border-radius:12px;padding:14px;box-shadow:var(--shadow-lg);display:none;width:220px;}
+.dev-panel.open{display:block;}
+.dev-panel .dev-label{color:var(--muted-2);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.dev-panel button{display:block;width:100%;text-align:left;background:none;color:#cbd5e1;border:none;padding:7px 8px;border-radius:6px;font-size:12.5px;}
+.dev-panel button:hover{background:rgba(255,255,255,.1);}
+
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ===== shared bits ===== */
+.logo{display:block;}
+.logo img{height:26px;display:block;}
+.logo.center{margin:0 auto;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:10px;border:none;font-weight:600;font-size:15px;transition:all .15s ease;}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#142743;transform:translateY(-1px);}
+.btn-primary:disabled{background:#cbd5e1;cursor:not-allowed;transform:none;}
+.btn-block{width:100%;}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--navy);}
+.btn-link{background:none;border:none;color:var(--navy);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:7px;}
+.field label .optional{color:var(--muted-2);font-weight:400;}
+.input-wrap{position:relative;}
+.input-wrap i.icon-left{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-size:14px;}
+.field input,.field select{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14.5px;color:var(--navy);background:#fff;transition:border-color .15s;}
+.field input.has-icon{padding-left:40px;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 4px rgba(28,49,84,0.08);}
+.field input.error{border-color:var(--coral);}
+.field input.valid{border-color:var(--success);}
+.field-hint{font-size:12.5px;color:var(--muted);margin-top:6px;}
+.field-error{font-size:12.5px;color:var(--coral);margin-top:6px;display:flex;align-items:center;gap:5px;}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* ============ SCREEN 1: cadastro ============ */
+#screen-cadastro .wrap{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+.auth-form-side{display:flex;align-items:center;justify-content:center;padding:48px 24px;}
+.auth-form-box{width:100%;max-width:400px;}
+.auth-form-box h1{font-size:26px;font-weight:800;margin:20px 0 6px;letter-spacing:-0.02em;}
+.auth-form-box .sub{color:var(--muted);font-size:14.5px;margin-bottom:28px;}
+.pw-strength{display:flex;gap:4px;margin-top:8px;margin-bottom:2px;}
+.pw-strength span{height:4px;flex:1;background:var(--border);border-radius:2px;}
+.pw-strength.s1 span:nth-child(1){background:var(--coral);}
+.pw-strength.s2 span:nth-child(1),.pw-strength.s2 span:nth-child(2){background:#f59e0b;}
+.pw-strength.s3 span{background:var(--success);}
+.pw-rules{list-style:none;margin-top:10px;display:grid;gap:5px;}
+.pw-rules li{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.pw-rules li i{font-size:11px;color:var(--border);}
+.pw-rules li.ok{color:var(--navy);}
+.pw-rules li.ok i{color:var(--success);}
+.check-row{display:flex;align-items:flex-start;gap:9px;margin:20px 0;font-size:13px;color:var(--muted);line-height:1.5;}
+.check-row input{margin-top:3px;accent-color:var(--navy);flex-shrink:0;}
+.inline-link{color:var(--navy);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+.auth-footer{text-align:center;margin-top:20px;font-size:14px;color:var(--muted);}
+
+.auth-brand-side{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy-mid) 100%);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:64px;position:relative;overflow:hidden;}
+.auth-brand-side::before{content:'';position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(220,54,69,0.18) 0%,transparent 70%);top:-120px;right:-160px;}
+.auth-brand-side::after{content:'';position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);bottom:-140px;left:-100px;}
+.brand-tag{position:relative;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ff6b76;margin-bottom:16px;}
+.auth-brand-side h2{position:relative;font-size:36px;font-weight:800;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;}
+.auth-brand-side .lead{position:relative;color:#b6c2d6;font-size:15.5px;line-height:1.6;margin-bottom:36px;max-width:400px;}
+.benefit-list{position:relative;display:grid;gap:18px;}
+.benefit{display:flex;gap:14px;align-items:flex-start;}
+.benefit .ic{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#ff8a92;flex-shrink:0;}
+.benefit b{display:block;font-size:14.5px;margin-bottom:2px;}
+.benefit span{font-size:13px;color:#94a3b8;}
+.trust-strip{position:relative;margin-top:44px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:26px;font-size:12px;color:#8ea1bd;}
+.trust-strip div{display:flex;align-items:center;gap:6px;}
+
+/* ============ SCREEN 2: verificação ============ */
+.center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;}
+.center-card{width:100%;max-width:420px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow);text-align:center;}
+.icon-circle{width:56px;height:56px;border-radius:50%;background:var(--bg-2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:22px;color:var(--navy);}
+.icon-circle.success{background:var(--success-bg);color:var(--success);}
+.center-card h1{font-size:21px;font-weight:800;margin-bottom:8px;}
+.center-card p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px;}
+.code-inputs{display:flex;gap:9px;justify-content:center;margin-bottom:22px;}
+.code-inputs input{width:46px;height:54px;text-align:center;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:10px;color:var(--navy);}
+.code-inputs input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 4px rgba(28,49,84,0.08);}
+.resend{font-size:13px;color:var(--muted);}
+.resend b{color:var(--navy);cursor:pointer;text-decoration:underline;}
+
+/* ============ SCREEN 3: tipo de conta ============ */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0;}
+.type-card{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:22px 18px;text-align:left;background:#fff;transition:all .15s;}
+.type-card:hover{border-color:var(--navy-mid);}
+.type-card.selected{border-color:var(--navy);background:var(--bg-2);box-shadow:0 0 0 3px rgba(28,49,84,0.08);}
+.type-card .ic{width:40px;height:40px;border-radius:10px;background:var(--bg-2);display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:17px;margin-bottom:14px;}
+.type-card.selected .ic{background:var(--navy);color:#fff;}
+.type-card b{display:block;font-size:15px;margin-bottom:4px;}
+.type-card span{font-size:12.5px;color:var(--muted);line-height:1.5;display:block;}
+
+/* ============ WIZARD SHELL (steps 4-9) ============ */
+.wizard{display:grid;grid-template-columns:280px 1fr;min-height:100vh;}
+.wizard-side{background:#fff;border-right:1px solid var(--border);padding:32px 24px;}
+.wizard-side .logo{margin-bottom:36px;padding-left:4px;}
+.step-list{list-style:none;display:grid;gap:2px;position:relative;}
+.step-item{display:flex;gap:12px;padding:12px 8px;border-radius:10px;position:relative;}
+.step-item .num{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted-2);flex-shrink:0;background:#fff;z-index:1;}
+.step-item .txt b{display:block;font-size:13.5px;color:var(--muted);font-weight:600;}
+.step-item .txt span{font-size:11.5px;color:var(--muted-2);}
+.step-item.done .num{background:var(--success);border-color:var(--success);color:#fff;}
+.step-item.done .num i{font-size:11px;}
+.step-item.done .txt b{color:var(--navy);}
+.step-item.current{background:var(--bg-2);}
+.step-item.current .num{background:var(--navy);border-color:var(--navy);color:#fff;}
+.step-item.current .txt b{color:var(--navy);}
+.step-item.current .txt span{color:var(--muted);}
+.step-connector{position:absolute;left:22px;top:38px;width:1.5px;height:calc(100% - 6px);background:var(--border);z-index:0;}
+.wizard-side .help-card{margin-top:32px;background:var(--bg-2);border-radius:12px;padding:16px;font-size:12.5px;color:var(--muted);}
+.wizard-side .help-card b{display:block;color:var(--navy);font-size:13px;margin-bottom:4px;}
+
+.wizard-main{padding:44px 48px;overflow-y:auto;}
+.mobile-topbar{display:none;align-items:center;margin-bottom:20px;}
+.wizard-topbar{display:flex;justify-content:space-between;align-items:center;max-width:640px;margin:0 auto 8px;font-size:12.5px;color:var(--muted);}
+.wizard-progress-track{max-width:640px;margin:0 auto 36px;height:5px;background:var(--bg-2);border-radius:3px;overflow:hidden;}
+.wizard-progress-fill{height:100%;background:var(--navy);border-radius:3px;transition:width .3s;}
+.wizard-content{max-width:640px;margin:0 auto;}
+.wizard-content .kicker{font-size:12px;font-weight:700;color:var(--coral);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.wizard-content h1{font-size:25px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
+.wizard-content .desc{color:var(--muted);font-size:14.5px;margin-bottom:32px;line-height:1.6;}
+.card-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);}
+.section-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:26px 0 14px;display:flex;align-items:center;gap:8px;}
+.section-label:first-child{margin-top:0;}
+.section-label i{color:var(--muted-2);}
+.wizard-actions{display:flex;justify-content:space-between;align-items:center;margin-top:28px;}
+
+/* choice cards (one-question-per-screen pattern) */
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.choice-grid.single{grid-template-columns:1fr;}
+.choice-card{border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:12px;background:#fff;transition:all .15s;}
+.choice-card:hover{border-color:var(--navy-mid);}
+.choice-card.selected{border-color:var(--navy);background:var(--bg-2);}
+.choice-card .radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.choice-card.selected .radio{border-color:var(--navy);}
+.choice-card.selected .radio::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--navy);}
+.choice-card b{font-size:14px;}
+
+/* document upload */
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.doc-card{border:1.5px dashed var(--border);border-radius:12px;padding:20px;text-align:center;background:var(--bg);transition:all .15s;}
+.doc-card:hover{border-color:var(--navy-mid);background:var(--bg-2);}
+.doc-card.uploaded{border-style:solid;border-color:var(--success);background:var(--success-bg);}
+.doc-card .ic{width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--muted);font-size:15px;}
+.doc-card.uploaded .ic{background:var(--success);border-color:var(--success);color:#fff;}
+.doc-card b{display:block;font-size:13.5px;margin-bottom:3px;}
+.doc-card span{font-size:11.5px;color:var(--muted);}
+.doc-card.uploaded span{color:var(--success);font-weight:600;}
+.upload-progress-row{display:flex;align-items:center;gap:14px;background:var(--bg-2);border-radius:12px;padding:16px 18px;margin-bottom:24px;}
+.upload-progress-row .ring{width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--navy) calc(var(--pct,50)*1%), var(--border) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.upload-progress-row .ring::after{content:'';width:34px;height:34px;border-radius:50%;background:var(--bg-2);}
+.upload-progress-row b{font-size:14px;display:block;}
+.upload-progress-row span{font-size:12.5px;color:var(--muted);}
+
+/* status / aprovação screen */
+.status-list{display:grid;gap:12px;margin:26px 0;}
+.status-row{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid var(--border);border-radius:12px;background:#fff;}
+.status-row .ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.status-row.done .ic{background:var(--success-bg);color:var(--success);}
+.status-row.progress .ic{background:#fef3c7;color:#b45309;}
+.status-row.pending .ic{background:var(--bg-2);color:var(--muted-2);}
+.status-row b{font-size:13.5px;display:block;}
+.status-row span{font-size:12px;color:var(--muted);}
+.status-row .badge{margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.status-row.done .badge{background:var(--success-bg);color:var(--success);}
+.status-row.progress .badge{background:#fef3c7;color:#b45309;}
+.status-row.pending .badge{background:var(--bg-2);color:var(--muted-2);}
+.spinner{width:16px;height:16px;border:2px solid #fef3c7;border-top-color:#b45309;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media (max-width:920px){
+  #screen-cadastro .wrap{grid-template-columns:1fr;}
+  .auth-brand-side{display:none;}
+  .wizard{grid-template-columns:1fr;}
+  .wizard-side{display:none;}
+  .wizard-main{padding:28px 20px 90px;}
+  .mobile-topbar{display:flex;}
+  .type-grid,.choice-grid,.doc-grid,.row-2,.row-3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1 — CADASTRO INICIAL                                   -->
+<!-- ============================================================ -->
+<section class="screen active" id="screen-cadastro">
+  <div class="wrap">
+    <div class="auth-form-side">
+      <div class="auth-form-box">
+        <div class="logo"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag"></div>
+        <h1>Crie sua conta</h1>
+        <p class="sub">Leva menos de 2 minutos. Sem cartão, sem burocracia.</p>
+
+        <form onsubmit="return false;">
+          <div class="field">
+            <label>Nome completo</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-user icon-left"></i>
+              <input class="has-icon" type="text" placeholder="Seu nome e sobrenome" value="Cliente Demonstração">
+            </div>
+          </div>
+          <div class="field">
+            <label>E-mail</label>
+            <div class="input-wrap">
+              <i class="fa-regular fa-envelope icon-left"></i>
+              <input class="has-icon" type="email" placeholder="voce@email.com" value="teste@example.com">
+            </div>
+          </div>
+          <div class="field">
+            <label>WhatsApp</label>
+            <div class="input-wrap">
+              <i class="fa-brands fa-whatsapp icon-left"></i>
+              <input class="has-icon" type="text" placeholder="(00) 00000-0000" value="(00) 00000-0000">
+            </div>
+          </div>
+          <div class="field">
+            <label>Senha</label>
+            <input type="password" placeholder="Crie uma senha" value="">
+            <div class="pw-strength s3"><span></span><span></span><span></span></div>
+            <ul class="pw-rules">
+              <li class="ok"><i class="fa-solid fa-circle-check"></i>Mínimo de 8 caracteres</li>
+              <li class="ok"><i class="fa-solid fa-circle-check"></i>Uma letra maiúscula</li>
+              <li class="ok"><i class="fa-solid fa-circle-check"></i>Um número ou símbolo</li>
+            </ul>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" checked>
+            <span>Li e concordo com os <a href="#" class="inline-link">Termos de Uso</a> e a <a href="#" class="inline-link">Política de Privacidade</a></span>
+          </label>
+          <button class="btn btn-primary btn-block" onclick="showScreen('screen-verificacao')">Criar conta gratuita <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+        <p class="auth-footer">Já tem uma conta? <a href="#" class="btn-link">Fazer login</a></p>
+      </div>
+    </div>
+
+    <div class="auth-brand-side">
+      <div class="brand-tag">Comece a vender hoje</div>
+      <h2>Você não está vendendo pouco.<br>Está aprovando mal.</h2>
+      <p class="lead">Abra sua conta gratuita e tenha acesso a um checkout que não cai no pico, com Pix instantâneo e inteligência de aprovação.</p>
+      <div class="benefit-list">
+        <div class="benefit">
+          <div class="ic"><i class="fa-solid fa-bolt"></i></div>
+          <div><b>Comece em minutos</b><span>Cadastro rápido, aprovação em até 24h</span></div>
+        </div>
+        <div class="benefit">
+          <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
+          <div><b>Conta verificada</b><span>Processo de validação seguro para proteger seu negócio</span></div>
+        </div>
+        <div class="benefit">
+          <div class="ic"><i class="fa-solid fa-headset"></i></div>
+          <div><b>Suporte dedicado</b><span>Equipe pronta para ajudar na sua jornada</span></div>
+        </div>
+      </div>
+      <div class="trust-strip">
+        <div><i class="fa-solid fa-lock"></i> Dados criptografados</div>
+        <div><i class="fa-solid fa-star"></i> +12 mil lojas ativas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2 — VERIFICAÇÃO DE E-MAIL                               -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-verificacao">
+  <div class="center-screen">
+    <div class="center-card">
+      <div class="logo center" style="margin-bottom:24px;"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="margin:0 auto;"></div>
+      <div class="icon-circle"><i class="fa-regular fa-envelope"></i></div>
+      <h1>Verifique seu e-mail</h1>
+      <p>Enviamos um código de 6 dígitos para <b style="color:var(--navy);">teste@example.com</b></p>
+      <div class="code-inputs">
+        <input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1"><input type="text" maxlength="1">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="showScreen('screen-tipo-conta')">Confirmar código</button>
+      <p class="resend" style="margin-top:18px;">Não recebeu? <b>Reenviar código</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3 — TIPO DE CONTA (PF / PJ)                             -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-tipo-conta">
+  <div class="center-screen">
+    <div class="center-card" style="max-width:520px;text-align:left;">
+      <div class="logo" style="margin-bottom:8px;"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag"></div>
+      <div style="height:5px;background:var(--bg-2);border-radius:3px;margin:24px 0 28px;overflow:hidden;"><div style="width:14%;height:100%;background:var(--navy);"></div></div>
+      <h1 style="text-align:left;">Como você vai vender com a ÚnicoPag?</h1>
+      <p style="text-align:left;">Isso define quais documentos vamos pedir na validação da conta.</p>
+      <div class="type-grid">
+        <button class="type-card selected" onclick="selectType(this)">
+          <div class="ic"><i class="fa-solid fa-building"></i></div>
+          <b>Pessoa Jurídica</b>
+          <span>Uso o CNPJ da minha empresa para vender</span>
+        </button>
+        <button class="type-card" onclick="selectType(this)">
+          <div class="ic"><i class="fa-solid fa-user"></i></div>
+          <b>Pessoa Física</b>
+          <span>Uso o meu CPF, ainda não tenho empresa aberta</span>
+        </button>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="showScreen('screen-negocio')">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- WIZARD SCREENS 4-9 (sidebar shell)                             -->
+<!-- ============================================================ -->
+
+<!-- SCREEN 4 — DADOS DO NEGÓCIO -->
+<section class="screen" id="screen-negocio">
+  <div class="wizard">
+    <aside class="wizard-side" id="sidebar-negocio"></aside>
+    <main class="wizard-main">
+<div class="mobile-topbar"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="height:22px;"></div>
+            <div class="wizard-topbar"><span>Etapa 2 de 6</span><span>Dados do negócio</span></div>
+      <div class="wizard-progress-track"><div class="wizard-progress-fill" style="width:28%;"></div></div>
+      <div class="wizard-content">
+        <div class="kicker">Sobre o negócio</div>
+        <h1>Conte um pouco sobre sua operação</h1>
+        <p class="desc">Quanto mais específico, melhor calibramos suas taxas e limites de aprovação.</p>
+        <div class="card-box">
+          <div class="field">
+            <label>Nome da loja</label>
+            <input type="text" placeholder="Como sua loja aparece para o cliente" value="Loja Demonstração">
+          </div>
+          <div class="field">
+            <label>CNPJ</label>
+            <input type="text" placeholder="00.000.000/0000-00" value="00.000.000/0000-00">
+          </div>
+          <div class="field">
+            <label>Qual é o seu modelo de negócio?</label>
+            <select>
+              <option>Dropshipping</option>
+              <option>Infoproduto / Curso online</option>
+              <option>E-commerce próprio</option>
+              <option>Afiliados</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Faturamento médio mensal</label>
+            <select>
+              <option>Até R$ 20 mil</option>
+              <option selected>R$ 70 mil – R$ 300 mil</option>
+              <option>R$ 300 mil – R$ 1 milhão</option>
+              <option>Acima de R$ 1 milhão</option>
+            </select>
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" onclick="showScreen('screen-tipo-conta')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-endereco')">Próxima etapa <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- SCREEN 5 — ENDEREÇO -->
+<section class="screen" id="screen-endereco">
+  <div class="wizard">
+    <aside class="wizard-side" id="sidebar-endereco"></aside>
+    <main class="wizard-main">
+<div class="mobile-topbar"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="height:22px;"></div>
+            <div class="wizard-topbar"><span>Etapa 3 de 6</span><span>Endereço</span></div>
+      <div class="wizard-progress-track"><div class="wizard-progress-fill" style="width:42%;"></div></div>
+      <div class="wizard-content">
+        <div class="kicker">Endereço fiscal</div>
+        <h1>Onde sua empresa está registrada?</h1>
+        <p class="desc">Usamos esse endereço para a validação da conta e emissão de documentos.</p>
+        <div class="card-box">
+          <div class="field">
+            <label>CEP</label>
+            <input type="text" placeholder="00000-000" value="00000-000">
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Endereço</label>
+              <input type="text" value="Endereço de demonstração">
+            </div>
+            <div class="field">
+              <label>Número</label>
+              <input type="text" value="000">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Bairro</label>
+              <input type="text" value="Bairro">
+            </div>
+            <div class="field">
+              <label>Complemento <span class="optional">(opcional)</span></label>
+              <input type="text" placeholder="Apto, sala, bloco...">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Cidade</label>
+              <input type="text" value="Cidade">
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <select><option>Alagoas</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" onclick="showScreen('screen-negocio')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-responsavel')">Próxima etapa <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- SCREEN 6 — RESPONSÁVEL / REPRESENTANTE -->
+<section class="screen" id="screen-responsavel">
+  <div class="wizard">
+    <aside class="wizard-side" id="sidebar-responsavel"></aside>
+    <main class="wizard-main">
+<div class="mobile-topbar"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="height:22px;"></div>
+            <div class="wizard-topbar"><span>Etapa 4 de 6</span><span>Responsável legal</span></div>
+      <div class="wizard-progress-track"><div class="wizard-progress-fill" style="width:56%;"></div></div>
+      <div class="wizard-content">
+        <div class="kicker">Identificação</div>
+        <h1>Quem é o responsável pela conta?</h1>
+        <p class="desc">Precisamos confirmar a identidade de quem administra essa conta na ÚnicoPag.</p>
+        <div class="card-box">
+          <div class="row-2">
+            <div class="field">
+              <label>Nome completo</label>
+              <input type="text" value="Cliente Demonstração">
+            </div>
+            <div class="field">
+              <label>CPF</label>
+              <input type="text" value="000.000.000-00">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Data de nascimento</label>
+              <input type="text" placeholder="dd/mm/aaaa" value="">
+            </div>
+            <div class="field">
+              <label>Nome da mãe</label>
+              <input type="text" placeholder="Nome completo da mãe">
+            </div>
+          </div>
+          <div class="field">
+            <label>Telefone</label>
+            <input type="text" value="(00) 00000-0000">
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" onclick="showScreen('screen-endereco')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-bancaria')">Próxima etapa <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- SCREEN 7 — DADOS BANCÁRIOS -->
+<section class="screen" id="screen-bancaria">
+  <div class="wizard">
+    <aside class="wizard-side" id="sidebar-bancaria"></aside>
+    <main class="wizard-main">
+<div class="mobile-topbar"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="height:22px;"></div>
+            <div class="wizard-topbar"><span>Etapa 5 de 6</span><span>Conta bancária</span></div>
+      <div class="wizard-progress-track"><div class="wizard-progress-fill" style="width:70%;"></div></div>
+      <div class="wizard-content">
+        <div class="kicker">Para onde vai seu dinheiro</div>
+        <h1>Cadastre sua conta bancária</h1>
+        <p class="desc">A conta precisa pertencer ao mesmo CPF ou CNPJ da sua conta ÚnicoPag.</p>
+        <div class="card-box">
+          <div class="row-2">
+            <div class="field">
+              <label>Banco</label>
+              <select><option>341 — Itaú</option></select>
+            </div>
+            <div class="field">
+              <label>Agência</label>
+              <input type="text" value="0000">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>Número da conta</label>
+              <input type="text" value="00000">
+            </div>
+            <div class="field">
+              <label>Tipo de conta</label>
+              <select><option>Conta Corrente</option><option>Conta Poupança</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" onclick="showScreen('screen-responsavel')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-documentos')">Próxima etapa <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- SCREEN 8 — DOCUMENTOS -->
+<section class="screen" id="screen-documentos">
+  <div class="wizard">
+    <aside class="wizard-side" id="sidebar-documentos"></aside>
+    <main class="wizard-main">
+<div class="mobile-topbar"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="height:22px;"></div>
+            <div class="wizard-topbar"><span>Etapa 6 de 6</span><span>Documentos</span></div>
+      <div class="wizard-progress-track"><div class="wizard-progress-fill" style="width:88%;"></div></div>
+      <div class="wizard-content">
+        <div class="kicker">Última etapa</div>
+        <h1>Envie seus documentos</h1>
+        <p class="desc">Seus documentos ficam protegidos e são usados só para verificar sua identidade.</p>
+        <div class="card-box">
+          <div class="upload-progress-row">
+            <div class="ring" style="--pct:50;"></div>
+            <div><b>2 de 4 documentos enviados</b><span>Faltam RG/CNH verso e selfie com documento</span></div>
+          </div>
+          <div class="doc-grid">
+            <div class="doc-card uploaded">
+              <div class="ic"><i class="fa-solid fa-check"></i></div>
+              <b>Documento frente</b>
+              <span>documento-frente.jpg</span>
+            </div>
+            <div class="doc-card">
+              <div class="ic"><i class="fa-solid fa-id-card"></i></div>
+              <b>Documento verso</b>
+              <span>PNG, JPG ou PDF até 10MB</span>
+            </div>
+            <div class="doc-card uploaded">
+              <div class="ic"><i class="fa-solid fa-check"></i></div>
+              <b>Comprovante de endereço</b>
+              <span>comprovante.pdf</span>
+            </div>
+            <div class="doc-card">
+              <div class="ic"><i class="fa-solid fa-camera"></i></div>
+              <b>Selfie com documento</b>
+              <span>PNG ou JPG até 10MB</span>
+            </div>
+          </div>
+        </div>
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" onclick="showScreen('screen-bancaria')"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+          <button class="btn btn-primary" onclick="showScreen('screen-status')">Enviar para análise <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 9 — STATUS / AGUARDANDO APROVAÇÃO                       -->
+<!-- ============================================================ -->
+<section class="screen" id="screen-status">
+  <div class="center-screen" style="background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy-mid) 100%);">
+    <div class="center-card" style="max-width:520px;text-align:left;">
+      <div class="logo center" style="margin-bottom:8px;"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag" style="margin:0 auto;"></div>
+      <div class="icon-circle success" style="margin-top:16px;"><i class="fa-solid fa-check"></i></div>
+      <h1 style="text-align:center;">Conta criada com sucesso!</h1>
+      <p style="text-align:center;">Estamos validando seus dados. Isso costuma levar até 24h — te avisamos por e-mail e WhatsApp assim que liberar.</p>
+      <div class="status-list">
+        <div class="status-row done">
+          <div class="ic"><i class="fa-solid fa-check"></i></div>
+          <div><b>Dados básicos</b><span>Concluído</span></div>
+          <div class="badge">OK</div>
+        </div>
+        <div class="status-row done">
+          <div class="ic"><i class="fa-solid fa-check"></i></div>
+          <div><b>Documentos recebidos</b><span>Concluído</span></div>
+          <div class="badge">OK</div>
+        </div>
+        <div class="status-row progress">
+          <div class="ic"><div class="spinner"></div></div>
+          <div><b>Verificação de identidade</b><span>Em análise pela nossa equipe</span></div>
+          <div class="badge">Em análise</div>
+        </div>
+        <div class="status-row pending">
+          <div class="ic"><i class="fa-regular fa-circle"></i></div>
+          <div><b>Conta liberada para vendas</b><span>Aguardando etapa anterior</span></div>
+          <div class="badge">Pendente</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block">Ir para o painel <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- ferramenta de navegação do PROTÓTIPO apenas — não existe no onboarding real, não implementar -->
+<button class="dev-toggle" onclick="document.getElementById('devPanel').classList.toggle('open')"><i class="fa-solid fa-layer-group"></i></button>
+<div class="dev-panel" id="devPanel">
+  <div class="dev-label">Navegar telas (só neste protótipo)</div>
+  <button onclick="showScreen('screen-cadastro')">1. Cadastro</button>
+  <button onclick="showScreen('screen-verificacao')">2. Verificação</button>
+  <button onclick="showScreen('screen-tipo-conta')">3. Tipo de conta</button>
+  <button onclick="showScreen('screen-negocio')">4. Dados do negócio</button>
+  <button onclick="showScreen('screen-endereco')">5. Endereço</button>
+  <button onclick="showScreen('screen-responsavel')">6. Responsável</button>
+  <button onclick="showScreen('screen-bancaria')">7. Conta bancária</button>
+  <button onclick="showScreen('screen-documentos')">8. Documentos</button>
+  <button onclick="showScreen('screen-status')">9. Status</button>
+</div>
+
+<script>
+const WIZARD_STEPS = [
+  {icon:'fa-circle-check', label:'Conta criada', desc:'E-mail verificado'},
+  {icon:'fa-store', label:'Dados do negócio', desc:'Sobre sua operação'},
+  {icon:'fa-location-dot', label:'Endereço', desc:'Endereço fiscal'},
+  {icon:'fa-user-shield', label:'Responsável', desc:'Identificação'},
+  {icon:'fa-building-columns', label:'Conta bancária', desc:'Para onde vai seu dinheiro'},
+  {icon:'fa-file-lines', label:'Documentos', desc:'Verificação final'},
+];
+const WIZARD_SCREEN_TO_STEP = {
+  'screen-negocio':1,'screen-endereco':2,'screen-responsavel':3,'screen-bancaria':4,'screen-documentos':5
+};
+
+function buildSidebar(activeIndex){
+  let html = '<div class="logo"><img src="assets/logo-unicopag-dark.png" alt="ÚnicoPag"></div><ul class="step-list">';
+  WIZARD_STEPS.forEach((s,i)=>{
+    let state = i < activeIndex ? 'done' : (i === activeIndex ? 'current' : '');
+    let numContent = i < activeIndex ? '<i class="fa-solid fa-check"></i>' : (i+1);
+    html += `<li class="step-item ${state}">
+      ${i < WIZARD_STEPS.length-1 ? '<div class="step-connector"></div>' : ''}
+      <div class="num">${numContent}</div>
+      <div class="txt"><b>${s.label}</b><span>${s.desc}</span></div>
+    </li>`;
+  });
+  html += '</ul><div class="help-card"><b>Precisa de ajuda?</b>Fale com o suporte pelo chat ou WhatsApp — respondemos em minutos.</div>';
+  return html;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  if (WIZARD_SCREEN_TO_STEP[id] !== undefined){
+    const idx = WIZARD_SCREEN_TO_STEP[id];
+    const sidebar = document.querySelector('#'+id+' .wizard-side');
+    if (sidebar) sidebar.innerHTML = buildSidebar(idx);
+  }
+
+  document.getElementById('devPanel').classList.remove('open');
+  window.scrollTo(0,0);
+}
+
+function selectType(el){
+  el.parentElement.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// init
+showScreen('screen-cadastro');
+</script>
+</body>
+</html>
