@@ -2,8 +2,12 @@
 
 Repositório de teste do novo fluxo visual de onboarding/KYC da Unicopag.
 
-## Preview
+## Testar agora
 
-O protótipo navegável será publicado via GitHub Pages.
+[Abra o protótipo navegável](https://raw.githack.com/matheusmacedo-create/unicopag-kyc-novo-visual/main/preview/index.html)
 
-> Observação: o preview público valida interface e navegação. Integrações reais de login, banco de dados, uploads e análise KYC exigem o backend Laravel configurado em uma hospedagem PHP.
+O protótipo contém dados fictícios e permite navegar pelas telas do novo onboarding.
+
+## Escopo deste preview
+
+Esta publicação valida interface, responsividade e navegação. Login, banco de dados, uploads e análise KYC reais exigem o backend Laravel configurado em uma hospedagem PHP.
